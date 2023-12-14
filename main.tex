@@ -14,75 +14,181 @@
     \input{abstract.tex}
 \end{abstract}
 
-\tableofcontents
+%To allow the row spacing in matrix
+\makeatletter
+\renewcommand*\env@matrix[1][\arraystretch]{%
+  \edef\arraystretch{#1}%
+  \hskip -\arraycolsep
+  \let\@ifnextchar\new@ifnextchar
+  \array{*\c@MaxMatrixCols c}}
+\makeatother
 
-\section{Introduction}
+% Covariance and Jacobian
+\newcommand{\jacobianLocalToGlobal}{\mathbb{J}_{L \rightarrow G}}
+\newcommand{\jacobianCorrection}{\mathbb{J}_{C}}
+\newcommand{\jacobianTransport}{\mathbb{J}_{T}}
+\newcommand{\jacobianGlobalToLocal}{\mathbb{J}_{G \rightarrow L}}
+\newcommand{\jacobianFull}{\mathbb{J}_{F}}
 
-We closely follow the description in \cite{adams1995}.
+\newcommand{\jacobianLocalToGlobalInitial}{\jacobianLocalToGlobal^{\texttt{i}}}
+\newcommand{\jacobianCorrectionInitial}{\jacobianCorrection^{\texttt{i}}}
+\newcommand{\jacobianGlobalToLocalInitial}{\jacobianGlobalToLocal^{\texttt{i}}}
+\newcommand{\jacobianGlobalToLocalInitialExpansion}{
+    \begin{pmatrix}
+     \begin{pmatrix}
+     \ubasisInitial^{\textrm{T}} \\
+     \vbasisInitial^{\textrm{T}}
+     \end{pmatrix}& 
+     \zeroMatrix &  \zeroMatrix \\
+     \zeroMatrix & 
+     \frac{\partial{(
+     \phi, \theta)}}{\partial{\globalDirection}}&  \zeroMatrix \\
+     \zeroMatrix & 
+     \zeroMatrix &  1
+    \end{pmatrix}
+}
+\newcommand{\jacobianLocalToGlobalInitialExpansion}{
+    \begin{pmatrix}[1.3]
+     \begin{pmatrix}
+     \ubasisInitial &
+     \vbasisInitial
+     \end{pmatrix}& 
+     \zeroMatrix &  \zeroMatrix \\
+     \zeroMatrix & 
+     \frac{\partial{\globalDirection}}{\partial{(\phi, \theta)}}&  \zeroMatrix \\
+     \zeroMatrix & 
+     \zeroMatrix &  1
+    \end{pmatrix}
+}
 
-\begin{figure}[ht]
-    \centering
-    \includegraphics[width=0.7\textwidth]{example-image-a}
-    \caption{This is a caption for a figure!}
-    \label{fig:example_a}
-\end{figure}
+\newcommand{\jacobianCorrectionInitialExpansion}{
+    \begin{pmatrix}[1.3]
+     \IdentityMatrixThree - \frac{1}{\wbasisInitial \cdot \globalDirection}\globalDirection \wbasisInitial^{\textrm{T}} & \zeroMatrix  & \zeroMatrix  \\
+     - \frac{1}{\wbasisInitial \cdot \globalDirection}\qoverp (\globalDirection \times \bfield) \wbasisInitial^{\textrm{T}} &  \IdentityMatrixThree &
+     \zeroMatrix \\
+     \zeroMatrix & 
+     \zeroMatrix &  1
+    \end{pmatrix}
+}
 
-\lipsum[1] 
+\newcommand{\jacobianCorrectionFinalExpansion}{
+    \begin{pmatrix}[1.3]
+     \IdentityMatrixThree - \frac{1}{\wbasisFinal \cdot \globalDirection}\globalDirection \wbasisFinal^{\textrm{T}} & \zeroMatrix  & \zeroMatrix  \\
+     - \frac{1}{\wbasisFinal \cdot \globalDirection}\qoverp (\globalDirection \times \bfield) \wbasisFinal^{\textrm{T}} &  \IdentityMatrixThree &
+     \zeroMatrix \\
+     \zeroMatrix & 
+     \zeroMatrix &  1
+    \end{pmatrix}
+}
 
-As discussed in \autoref{fig:example_a}, the results are very promising.
+\newcommand{\jacobianCorrectionFinalExpansionPerigee}{    \begin{pmatrix}[1.3]
+     \IdentityMatrixThree - \frac{1}{1 - \globalDirection \cdot \vbasis}\globalDirection (\globalDirection - (\globalDirection \cdot \vbasisFinal)\vbasisFinal)^{\textrm{T}} & -\frac{1}{1 - \globalDirection \cdot \vbasis} \globalDirection (l_{0\texttt{f}}\ubasisFinal)^{\textrm{T}} & \zeroMatrix  \\
+     - \frac{1}{1 - \globalDirection \cdot \vbasis}\qoverp (\globalDirection \times \bfield) (\globalDirection - (\globalDirection \cdot \vbasisFinal)\vbasisFinal)^{\textrm{T}} &  \IdentityMatrixThree -\frac{1}{1 - \globalDirection \cdot \vbasis} \qoverp (\globalDirection \times \bfield) (l_{0\texttt{f}}\ubasisFinal)^{\textrm{T}} &
+     \zeroMatrix \\
+     \zeroMatrix & 
+     \zeroMatrix &  1
+    \end{pmatrix}
+}
 
-\section{Method}
 
-\begin{figure}[ht]
-    \begin{subfigure}{0.5\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{example-image-a}
-        \caption{This is a caption for a figure!}
-        \label{fig:sub:example_a}
-    \end{subfigure}
-    \begin{subfigure}{0.5\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{example-image-b}
-        \caption{This is a caption for a figure!}
-        \label{fig:sub:example_b}
-    \end{subfigure}
+\newcommand{\jacobianLocalToGlobalFinal}{\jacobianLocalToGlobal^{\texttt{f}}}
+\newcommand{\jacobianCorrectionFinal}{\jacobianCorrection^{\texttt{f}}}
+\newcommand{\jacobianGlobalToLocalFinal}{\jacobianGlobalToLocal^{\texttt{f}}}
 
-    \caption{This is a combined caption, \subref{fig:sub:example_a} shows one
-    thing, \subref{fig:sub:example_b} shows another thing}
-    \label{fig:sub}
-\end{figure}
+% Global parameter
+\newcommand{\globalPosition}{\mathbf{r}}
+\newcommand{\globalDirection}{\mathbf{t}}
+\newcommand{\qoverp}{\psi}
 
-\lipsum[1] 
+% Local
+\newcommand{\localPosition}{\boldsymbol{\epsilon}}
+\newcommand{\localAngle}{\boldsymbol{\lambda}}
+\newcommand{\surfaceCenter}{\mathbf{c}}
+\newcommand{\surfaceNormal}{\mathbf{w}}
+\newcommand{\ubasis}{\mathbf{u}}
+\newcommand{\vbasis}{\mathbf{v}}
+\newcommand{\wbasis}{\mathbf{w}}
+\newcommand{\ubasisInitial}{\ubasis_\texttt{i}}
+\newcommand{\vbasisInitial}{\vbasis_\texttt{i}}
+\newcommand{\wbasisInitial}{\wbasis_\texttt{i}}
+\newcommand{\ubasisFinal}{\ubasis_\texttt{f}}
+\newcommand{\vbasisFinal}{\vbasis_\texttt{f}}
+\newcommand{\wbasisFinal}{\wbasis_\texttt{f}}
+\newcommand{\localPosU}{l_0}
+\newcommand{\localPosV}{l_1}
 
-See \autoref{fig:sub} for an example of a combined figure.
+% Etc
+\newcommand{\bfield}{\mathbf{b}}
+\newcommand{\zeroMatrix}{\mathbb{O}}
+\newcommand{\IdentityMatrixFive}{\mathbb{I}}
+\newcommand{\IdentityMatrixThree}{\mathbf{I}}
 
-\lipsum[1] 
+\section{Definitions}
 
-\begin{equation}
-    a^2 + b^2 = c^2
-    \label{eq:pythagoras}
-\end{equation}
+\begin{center}
+\begin{tabular}{||c c ||} 
+ \hline
+ Symbol & Definition  \\ [0.5ex] 
+ \hline\hline
+ $\globalDirection$ & Unit tangentional direction \\
+ \hline
+ $\phi, \theta$ & Angles of spherical coordinate \\
+ \hline
+ $\qoverp$ & a charge divided by momentum \\
+ \hline
+ $\bfield$ & B field \\
+ \hline 
+ $\ubasisInitial, \vbasisInitial, \wbasisInitial$ & Orthonormal basis of the initial surface  \\ 
+ \hline
+ $\ubasisFinal, \vbasisFinal, \wbasisFinal$ & Orthonormal basis of the final surface  \\ 
+ \hline 
+ $\jacobianGlobalToLocalInitial$, $\jacobianGlobalToLocalFinal$ & Jacobians for global to local coordinate at the initial and final surface  \\
+ \hline
+  $\jacobianLocalToGlobalInitial$, $\jacobianLocalToGlobalFinal$ &  Jacobians for local to global coordinate at the initial and final surface \\
+ \hline
+  $\jacobianCorrectionInitial$, $\jacobianCorrectionFinal$ &  Jacobian correction term to compensate for path length variations  \\ 
+ \hline
+ $\jacobianFull$ & Full jacobian for the round trip \\
+ \hline
+ $\zeroMatrix$ & Zero matrix with arbitrary dimension \\
+ \hline
+ $\IdentityMatrixThree$, $\IdentityMatrixFive$  &  Identiy matrix with $3\times3$ and $5\times5$\\
+ \hline
+\end{tabular}
+\end{center}
 
-The business with the triangles, our boy Pythagoras has already figured out, according to \autoref{eq:pythagoras}.
+\section{Derivations}
 
-\section{Conclusion}
+The full jacobian for round trip is written as the following:
 
-\lipsum[1] 
+\begin{align}
+    \jacobianFull & = \jacobianGlobalToLocalInitial \jacobianCorrectionInitial \jacobianLocalToGlobalFinal \jacobianGlobalToLocalFinal \jacobianCorrectionFinal \jacobianLocalToGlobalInitial \\
+    & = \jacobianLocalToGlobalInitial \jacobianCorrection^i \jacobianCorrectionFinal \jacobianLocalToGlobalInitial
+\end{align}
 
-\appendix
+\subsection{bound to bound to bound}
 
-\section{Auxiliary material}
-\subsection{First subsection}
+Derivation can be done by showing that (1) $\jacobianCorrectionInitial \jacobianCorrectionFinal$ is projected into $\jacobianCorrectionInitial$, and (2) $\jacobianCorrectionInitial \jacobianLocalToGlobalInitial$ is projected into $\jacobianLocalToGlobalInitial$:
 
-\lipsum[1] 
+\begin{align*}
+    \jacobianFull & = \jacobianGlobalToLocalInitialExpansion \jacobianCorrectionInitialExpansion \\
+    & \quad \times \jacobianCorrectionFinalExpansion \jacobianLocalToGlobalInitialExpansion \\
+    & = \jacobianGlobalToLocalInitialExpansion \jacobianCorrectionInitialExpansion \jacobianLocalToGlobalInitialExpansion \\
+    & = \jacobianGlobalToLocalInitialExpansion \jacobianLocalToGlobalInitialExpansion \\ 
+    & = \IdentityMatrixFive
+\end{align*}
 
-\begin{figure}[ht]
-    \centering
-    \includegraphics[width=0.7\textwidth]{example-image-a}
-    \caption{This is a caption for a figure!}
-    \label{fig:appendix_example_a}
-\end{figure}
 
-\printbibliography{}
+\subsection{bound to perigee to bound}
+
+The calculation is almost the same:
+
+\begin{align*}
+    \jacobianFull & = \jacobianGlobalToLocalInitialExpansion \jacobianCorrectionInitialExpansion \\
+    & \quad \times \jacobianCorrectionFinalExpansionPerigee \jacobianLocalToGlobalInitialExpansion \\    
+    & = \jacobianGlobalToLocalInitialExpansion \jacobianCorrectionInitialExpansion \jacobianLocalToGlobalInitialExpansion \\
+    & = \jacobianGlobalToLocalInitialExpansion \jacobianLocalToGlobalInitialExpansion \\ 
+    & = \IdentityMatrixFive
+\end{align*}
 
 \end{document}
