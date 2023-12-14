@@ -165,7 +165,7 @@ The full jacobian for round trip is written as the following:
 
 \begin{align}
     \jacobianFull & = \jacobianGlobalToLocalInitial \jacobianCorrectionInitial \jacobianLocalToGlobalFinal \jacobianGlobalToLocalFinal \jacobianCorrectionFinal \jacobianLocalToGlobalInitial \\
-    & = \jacobianLocalToGlobalInitial \jacobianCorrectionInitial \jacobianCorrectionFinal \jacobianLocalToGlobalInitial
+    & = \jacobianLocalToGlobalInitial \jacobianCorrectionInitial \jacobianCorrectionFinal \jacobianLocalToGlobalInitial.
 \end{align}
 
 \subsection{bound to bound to bound}
@@ -177,7 +177,7 @@ Derivation can be done by showing that (1) $\jacobianCorrectionInitial \jacobian
     & \quad \times \jacobianCorrectionFinalExpansion \jacobianLocalToGlobalInitialExpansion \\
     & = \jacobianGlobalToLocalInitialExpansion \jacobianCorrectionInitialExpansion \jacobianLocalToGlobalInitialExpansion \\
     & = \jacobianGlobalToLocalInitialExpansion \jacobianLocalToGlobalInitialExpansion \\ 
-    & = \IdentityMatrixFive
+    & = \IdentityMatrixFive.
 \end{align*}
 
 
@@ -190,7 +190,7 @@ The calculation is almost the same:
     & \quad \times \jacobianCorrectionFinalExpansionPerigee \jacobianLocalToGlobalInitialExpansion \\    
     & = \jacobianGlobalToLocalInitialExpansion \jacobianCorrectionInitialExpansion \jacobianLocalToGlobalInitialExpansion \\
     & = \jacobianGlobalToLocalInitialExpansion \jacobianLocalToGlobalInitialExpansion \\ 
-    & = \IdentityMatrixFive
+    & = \IdentityMatrixFive.
 \end{align*}
 
 \end{document}
