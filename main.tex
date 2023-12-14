@@ -82,8 +82,8 @@
 }
 
 \newcommand{\jacobianCorrectionFinalExpansionPerigee}{    \begin{pmatrix}[1.3]
-     \IdentityMatrixThree - \frac{1}{1 - \globalDirection \cdot \vbasis}\globalDirection (\globalDirection - (\globalDirection \cdot \vbasisFinal)\vbasisFinal)^{\textrm{T}} & -\frac{1}{1 - \globalDirection \cdot \vbasis} \globalDirection (l_{0\texttt{f}}\ubasisFinal)^{\textrm{T}} & \zeroMatrix  \\
-     - \frac{1}{1 - \globalDirection \cdot \vbasis}\qoverp (\globalDirection \times \bfield) (\globalDirection - (\globalDirection \cdot \vbasisFinal)\vbasisFinal)^{\textrm{T}} &  \IdentityMatrixThree -\frac{1}{1 - \globalDirection \cdot \vbasis} \qoverp (\globalDirection \times \bfield) (l_{0\texttt{f}}\ubasisFinal)^{\textrm{T}} &
+     \IdentityMatrixThree - \frac{1}{1 - \globalDirection \cdot \vbasisFinal}\globalDirection (\globalDirection - (\globalDirection \cdot \vbasisFinal)\vbasisFinal)^{\textrm{T}} & -\frac{1}{1 - \globalDirection \cdot \vbasisFinal} \globalDirection (l_{0\texttt{f}}\ubasisFinal)^{\textrm{T}} & \zeroMatrix  \\
+     - \frac{1}{1 - \globalDirection \cdot \vbasisFinal}\qoverp (\globalDirection \times \bfield) (\globalDirection - (\globalDirection \cdot \vbasisFinal)\vbasisFinal)^{\textrm{T}} &  \IdentityMatrixThree -\frac{1}{1 - \globalDirection \cdot \vbasisFinal} \qoverp (\globalDirection \times \bfield) (l_{0\texttt{f}}\ubasisFinal)^{\textrm{T}} &
      \zeroMatrix \\
      \zeroMatrix & 
      \zeroMatrix &  1
@@ -141,6 +141,8 @@
  $\ubasisInitial, \vbasisInitial, \wbasisInitial$ & Orthonormal basis of the initial surface  \\ 
  \hline
  $\ubasisFinal, \vbasisFinal, \wbasisFinal$ & Orthonormal basis of the final surface  \\ 
+ \hline
+ $l_{0\texttt{f}}$ & The component of $\ubasisFinal$ in local position \\
  \hline 
  $\jacobianGlobalToLocalInitial$, $\jacobianGlobalToLocalFinal$ & Jacobians for global to local coordinate at the initial and final surface  \\
  \hline
@@ -163,7 +165,7 @@ The full jacobian for round trip is written as the following:
 
 \begin{align}
     \jacobianFull & = \jacobianGlobalToLocalInitial \jacobianCorrectionInitial \jacobianLocalToGlobalFinal \jacobianGlobalToLocalFinal \jacobianCorrectionFinal \jacobianLocalToGlobalInitial \\
-    & = \jacobianLocalToGlobalInitial \jacobianCorrection^i \jacobianCorrectionFinal \jacobianLocalToGlobalInitial
+    & = \jacobianLocalToGlobalInitial \jacobianCorrectionInitial \jacobianCorrectionFinal \jacobianLocalToGlobalInitial
 \end{align}
 
 \subsection{bound to bound to bound}
